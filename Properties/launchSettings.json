@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CrewNodePlugin": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\Temporary\\source\\repos\\server\\src\\Impostor.Server\\bin\\Debug\\net5.0\\Impostor.Server.exe"
+    }
+  }
+}
