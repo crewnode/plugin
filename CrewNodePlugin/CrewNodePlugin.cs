@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CrewNodePlugin.Games;
+using CrewNodePlugin.Utils;
 using Impostor.Api.Events.Managers;
 using Impostor.Api.Plugins;
 using Microsoft.Extensions.Logging;
@@ -37,6 +38,7 @@ namespace CrewNodePlugin
             _logger = logger;
             _eventManager = eventManager;
             GameModeType.Logger = logger;
+            DiscordUtils.Setup();
         }
 
         /// <summary>
