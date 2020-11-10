@@ -38,7 +38,9 @@ namespace CrewNodePlugin
             _logger = logger;
             _eventManager = eventManager;
             GameModeType.Logger = logger;
-            DiscordUtils.Setup();
+
+            // TODO (Simple): Discord Setup for observing games
+            if (debug) DiscordUtils.Setup();
         }
 
         /// <summary>
