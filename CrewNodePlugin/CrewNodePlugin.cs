@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CrewNodePlugin
 {
-    [ImpostorPlugin(package: "crewnode", name: "CrewNode", author: "CrewNode", version: "0.0.1")]
+    [ImpostorPlugin(package: "crewnode", name: "CrewNode", author: "CrewNode", version: "0.0.1-alpha3")]
     public class CrewNodePlugin : PluginBase
     {
         /// <summary>
@@ -17,6 +17,7 @@ namespace CrewNodePlugin
         private readonly IEventManager _eventManager;
         private IDisposable[] _unregister;
         public static bool debug = true;
+        public static bool verbose = false;
 
         /// <summary>
         ///     The constructor of the plugin. There are a few parameters you can add here and they

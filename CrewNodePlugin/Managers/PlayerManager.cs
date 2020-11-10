@@ -17,6 +17,5 @@ namespace CrewNodePlugin.Manager
         {
             _game = game;
         }
-
     }
 }

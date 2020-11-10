@@ -49,9 +49,6 @@ namespace CrewNodePlugin
         [EventListener]
         public async void OnGameStartingAsync(IGameStartingEvent e)
         {
-            //Has the game even started?
-            //if (e.Game.GameState != GameStates.Started) return;
-
             // Manager Takeover
             CrewNodeGame game = GameManager.GetGame(e.Game.Code);
             if (game == null) return;
@@ -73,6 +70,17 @@ namespace CrewNodePlugin
             if (game == null) { Console.WriteLine("Game is null"); return; }
             if (game.GetGameModeManager() == null) { Console.WriteLine("GameManager is null"); return; }
             await game.GetGameModeManager().HandleEvent(e, "HandleGameStarted");
+        }
+
+        /// <summary>
+        ///     Runs once a game has been destroyed
+        /// </summary>
+        /// <param name="e"></param>
+        [EventListener]
+        public async void OnGameDestroyedAsync(IGameDestroyedEvent e)
+        {
+            // Cleanup
+            GameManager.DestroyGame(e.Game);
         }
     }
 }

@@ -15,6 +15,7 @@ using System;
 using Impostor.Api.Net.Inner.Objects;
 using CrewNodePlugin.Manager.Models;
 using CrewNodePlugin.Manager;
+using CrewNodePlugin.Utils;
 
 namespace CrewNodePlugin
 {
@@ -30,6 +31,10 @@ namespace CrewNodePlugin
         [EventListener]
         public async void OnPlayerMovementAsync(IPlayerMovementEvent e)
         {
+            // Debugging
+            if (CrewNodePlugin.debug)
+                _logger.LogDebug(GameManagerUtils.GetTotalLobbyCount() + " lobbies, " + GameManagerUtils.GetTotalPlayerCount() + " players.");
+
             // Has the game even started?
             if (e.Game.GameState != GameStates.Started) return;
 

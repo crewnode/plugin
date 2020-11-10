@@ -8,7 +8,7 @@ using Impostor.Api.Net.Inner.Objects;
 
 namespace CrewNodePlugin.Games.TagGame
 {
-    public class Utils
+    public class TagUtils
     {
         /// <summary>
         ///     The constants set below are hard-set values that
@@ -16,7 +16,7 @@ namespace CrewNodePlugin.Games.TagGame
         /// </summary>
         public const float infectionRange = 0.5f;
         public const long tagTimer = 3000;
-        public const int roundStart = 15;
+        public const int roundStart = 30;
         public const int gameEnd = 600;
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace CrewNodePlugin.Games.TagGame
 
     public static class Extensions
     {
-        public async static ValueTask SetOutfitAsync(this IInnerPlayerControl playerControl, Utils.Outfit outfit)
+        public async static ValueTask SetOutfitAsync(this IInnerPlayerControl playerControl, TagUtils.Outfit outfit)
         {
             await playerControl.SetColorAsync(outfit.Color);
             await playerControl.SetHatAsync(outfit.Hat);

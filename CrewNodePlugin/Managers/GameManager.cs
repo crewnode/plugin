@@ -52,16 +52,24 @@ namespace CrewNodePlugin.Manager
         }
 
         /// <summary>
-        ///     Remove a game.
+        ///     Destroy a game.
         /// </summary>
         /// <param name="game">Game Object</param>
-        public static void EndGame(IGame game)
+        public static void DestroyGame(IGame game)
         {
             if (!_games.ContainsKey(game.Code))
                 return;
 
             // Remove the game
             _games.Remove(game.Code);
+        }
+
+        /// <summary>
+        ///     Get all running games.
+        /// </summary>
+        public static Dictionary<string, CrewNodeGame> GetAllGames()
+        {
+            return _games;
         }
     }
 }

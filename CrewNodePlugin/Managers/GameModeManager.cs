@@ -70,14 +70,10 @@ namespace CrewNodePlugin.Manager
             MethodInfo method = _gameMode.GetType().GetMethod(eventName);
             if (method == null) return;
 
-            Console.WriteLine("Calling " + eventName);
-            try
-            {
-                await method.InvokeAsync(_gameMode, new object[] { e });
-            } catch (Exception ex)
-            {
-                //Console.WriteLine(ex);
-            }
+            // TODO: Figure out why this errors, even though it does not
+            //       cause any adverse side affects...
+            try { await method.InvokeAsync(_gameMode, new object[] { e }); }
+            catch { }
         }
 
         /// <summary>

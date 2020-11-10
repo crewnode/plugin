@@ -18,6 +18,7 @@ namespace CrewNodePlugin.Manager.Models
             _pm = new PlayerManager(game);
         }
 
+        public IGame GetGameInstance() => this._game;
         public GameModeManager GetGameModeManager() => this._gmm;
         public PlayerManager GetPlayerManager() => this._pm;
         public void UpdateState(IGame game) => this._gmm.UpdateGame(game);
