@@ -35,7 +35,7 @@ namespace CrewNodePlugin
         {
             _logger = logger;
             _eventManager = eventManager;
-            GameModeType.SetLogger(logger);
+            GameModeType.Logger = logger;
         }
 
         /// <summary>

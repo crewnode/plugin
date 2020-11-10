@@ -49,8 +49,8 @@ namespace CrewNodePlugin
         [EventListener]
         public async void OnGameStartingAsync(IGameStartingEvent e)
         {
-            // Has the game even started?
-            if (e.Game.GameState != GameStates.Started) return;
+            //Has the game even started?
+            //if (e.Game.GameState != GameStates.Started) return;
 
             // Manager Takeover
             CrewNodeGame game = GameManager.GetGame(e.Game.Code);

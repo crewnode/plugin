@@ -10,7 +10,7 @@ namespace CrewNodePlugin.Games
 {
     class GameModeType
     {
-        public static ILogger<CrewNodePlugin> _logger { get; private set; }
+        public static ILogger<CrewNodePlugin> Logger;
 
         // Player Calls
         public virtual async ValueTask HandlePlayerJoin(IGamePlayerJoinedEvent e)
@@ -72,7 +72,7 @@ namespace CrewNodePlugin.Games
         // Logger
         public static void SetLogger(ILogger<CrewNodePlugin> logger)
         {
-            _logger = logger;
+            Logger = logger;
         }
     }
 }

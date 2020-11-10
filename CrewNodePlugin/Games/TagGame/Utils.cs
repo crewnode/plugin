@@ -55,7 +55,7 @@ namespace CrewNodePlugin.Games.TagGame
         /// <summary>
         ///     Used for debugging, outfit shows players who should've been kicked
         /// </summary>
-        public static readonly Outfit ShouldBeKickedOutfitTagged = new Outfit
+        public static readonly Outfit CooldownTaggedOutfit = new Outfit
         {
             Color = 0x00,
             Hat = 72,
@@ -66,7 +66,7 @@ namespace CrewNodePlugin.Games.TagGame
         /// <summary>
         ///     Used for debugging, outfit shows players who should've been kicked
         /// </summary>
-        public static readonly Outfit ShouldBeKickedOutfitRegular = new Outfit
+        public static readonly Outfit CoolDownRegularOutfit = new Outfit
         {
             Color = 0x00,
             Hat = 30,
@@ -109,6 +109,7 @@ namespace CrewNodePlugin.Games.TagGame
             public IClientPlayer client;
             public (byte, long) cooldown;
             public Vector2 position;
+            public int timesMoved = 0;
 
             public Outfit Outfit => new Outfit
             {

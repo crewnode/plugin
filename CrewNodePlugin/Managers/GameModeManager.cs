@@ -45,7 +45,6 @@ namespace CrewNodePlugin.Manager
                 case Identity.HideAndSeek: break;
                 case Identity.HundredPlayer: break;
                 case Identity.Tag:
-                    Console.WriteLine("SET UP TAG INIT YAAAAAAAA BOI");
                     _gameMode = new Games.Tag();
                     break;
             }
@@ -71,13 +70,13 @@ namespace CrewNodePlugin.Manager
             MethodInfo method = _gameMode.GetType().GetMethod(eventName);
             if (method == null) return;
 
-            Console.WriteLine("Found method: " + method.Name + " from " + _gameMode.GetType());
+            Console.WriteLine("Calling " + eventName);
             try
             {
                 await method.InvokeAsync(_gameMode, new object[] { e });
             } catch (Exception ex)
             {
-                Console.WriteLine("it fucked up massively kek");
+                //Console.WriteLine(ex);
             }
         }
 

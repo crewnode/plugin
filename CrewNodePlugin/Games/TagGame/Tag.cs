@@ -7,8 +7,10 @@ using Impostor.Api.Net;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using System.Threading.Tasks;
 using static CrewNodePlugin.Games.TagGame.Utils;
@@ -25,8 +27,9 @@ namespace CrewNodePlugin.Games
         public bool _roundStarted = false;
 
         // Configurables
-        private const int _kickAfterSeconds = 5; // Best: 30
-        private const int _updatePlayerPosAfter = 10; // Best: 5
+        private const int _kickAfterSeconds = 30; // Best: 30
+        private const int _updatePlayerPosAfter = 5; // Best: 5
+        private const int _minNumOfMovements = 8; //Best: 8
 
         /// <summary>
         ///     Handle player movement for the Tag gamemode
@@ -40,6 +43,7 @@ namespace CrewNodePlugin.Games
             Player movedPlayer = UpdatePlayerPosition(e);
             foreach (var player in _players)
             {
+                if (!e.Game.Players.Any((p) => player.Value.client.Character.PlayerInfo.PlayerId == p.Character.PlayerInfo.PlayerId)) continue;
                 if (movedPlayer.isTagged == player.Value.isTagged) continue;
                 if (Vector2.Distance(player.Value.position, movedPlayer.position) >= Utils.infectionRange) continue;
                 if (PlayersRequireCooldown(movedPlayer, player.Value)) continue;
@@ -77,6 +81,7 @@ namespace CrewNodePlugin.Games
         /// <param name="e"></param>
         public override async ValueTask HandleGameStarting(IGameStartingEvent e)
         {
+            if(CrewNodePlugin.debug) return;
             await base.HandleGameStarting(e);
             e.Game.Options.NumEmergencyMeetings = 0;
             e.Game.Options.ImpostorLightMod = .25f;
@@ -101,7 +106,8 @@ namespace CrewNodePlugin.Games
             // Start the Tag gamemode in another thread
             this._cts = new CancellationTokenSource();
             this._gameEnds = Utils.gameEnd;
-            this._roundStarts = Utils.roundStart;
+            this._roundStarts = 30;
+            Console.WriteLine("Hit");
             PluginUtils.RunTask(async () => { await HandleTagInterval(e); }, 1, _cts.Token);
         }
 
@@ -110,6 +116,7 @@ namespace CrewNodePlugin.Games
         /// </summary>
         private async ValueTask HandleTagInterval(IGameStartedEvent e)
         {
+            Console.WriteLine(DateTime.UtcNow);
             // Player Name Updates
             string message = this._roundStarts != 0 ? $"Starting In {this._roundStarts--}" : $"Ends {Utils.SecondsToFormat(this._gameEnds--)}";
 
@@ -140,24 +147,15 @@ namespace CrewNodePlugin.Games
                     this._roundStarted = true;
                 }
 
-                // Check if a player is in cooldown period
-                if (this._roundStarts != 0) {
-                    if (characterInfo.PlayerInfo.ColorId != Utils.NeutralOutfit.Color)
-                        await characterInfo.SetOutfitAsync(Utils.NeutralOutfit);
-                }
-                else
-                {
-                    if (PlayerIsInCooldown(player.Value) && characterInfo.PlayerInfo.ColorId != Utils.ShouldBeKickedOutfitTagged.Color)
-                        await characterInfo.SetOutfitAsync(pValue.isTagged ? Utils.ShouldBeKickedOutfitTagged : Utils.ShouldBeKickedOutfitRegular);
-                    else
-                    {
-                        // We don't want to send OutfitAsync every interval, so we'll compare colours
-                        if (pValue.isTagged && characterInfo.PlayerInfo.ColorId != Utils.TaggedOutfit.Color)
-                            await characterInfo.SetOutfitAsync(Utils.TaggedOutfit);
-                        else if (!pValue.isTagged && characterInfo.PlayerInfo.ColorId != Utils.RegularOutfit.Color)
-                            await characterInfo.SetOutfitAsync(Utils.RegularOutfit);
-                    }
-                }
+                // Checks if the beginning round is still running, and makes sure everybody is assigned the neutral outfit.
+                if (this._roundStarts != 0 && characterInfo.PlayerInfo.ColorId != Utils.NeutralOutfit.Color)
+                    await characterInfo.SetOutfitAsync(Utils.NeutralOutfit);
+                // If the game has started makes sure that the tagger/regular on cooldown has a blinking red color. 
+                else if (this.PlayerIsInCooldown(pValue) && Tag.ValidAttireCooldown(pValue) && !Tag.OnSelfCooldown(pValue))
+                    await characterInfo.SetOutfitAsync(pValue.isTagged ? Utils.CooldownTaggedOutfit : Utils.CoolDownRegularOutfit);
+                // If the player isnt on cooldown makes sure they have the correct attire
+                else if (Tag.ValidAttire(pValue) && !Tag.OnSelfCooldown(pValue))
+                    await characterInfo.SetOutfitAsync(pValue.isTagged ? Utils.TaggedOutfit : Utils.RegularOutfit);
 
                 // Update name
                 await characterInfo.SetNameAsync($"{pValue.playerName} {message}");
@@ -171,25 +169,19 @@ namespace CrewNodePlugin.Games
                 }
 
                 // Check for AFK
-                // [TODO] Artic: Fix it
-                if (
-                    this._gameEnds == (Utils.gameEnd - Tag._kickAfterSeconds) &&
-                    pValue.position == Extensions.GetSpawnLocation(
-                        characterInfo.PlayerInfo.PlayerId,
-                        this._originalPlayerCount
-                    ))
+                if (this._gameEnds == (Utils.gameEnd - Tag._kickAfterSeconds) && Tag.IsAFK(pValue, _originalPlayerCount))
                 {
                     // Makes sure to only pick new taggers when an afk tagger gets kicked...
                     if (pValue.isTagged)
                     {
-                        _logger.LogDebug($"{pValue.playerName} was the tagger, but has now been kicked.");
+                        Logger.LogDebug($"{pValue.playerName} was the tagger, but has now been kicked.");
                         await this.SelectNewTagger();
                         if (!CrewNodePlugin.debug)
-                            _players.TryRemove(player.Key, out _);
+                            _players.Remove(player.Key, out _);
                     }
 
-                    if (!CrewNodePlugin.debug) await pValue.client.KickAsync(); else await characterInfo.SetOutfitAsync(Utils.ShouldBeKickedOutfitRegular);
-                    _logger.LogWarning($"{pValue.playerName} kicked");
+                    if (!CrewNodePlugin.debug) await pValue.client.KickAsync(); else await characterInfo.SetOutfitAsync(Utils.CoolDownRegularOutfit);
+                    Logger.LogWarning($"{pValue.playerName} kicked");
                 }
             }
 
@@ -206,6 +198,19 @@ namespace CrewNodePlugin.Games
             }
         }
 
+        private static bool OnSelfCooldown(Player player)
+        {
+            long timeInMilliseconds = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
+
+            var (id, cooldown) = player.cooldown;
+
+            var onTagTimer = timeInMilliseconds <= cooldown && id == player.client.Character.PlayerInfo.PlayerId;
+
+            return onTagTimer;
+        }
+
+
+
         /// <summary>
         ///     Handle a game that has ended
         /// </summary>
@@ -214,6 +219,43 @@ namespace CrewNodePlugin.Games
         {
             await base.HandleGameEnded(e);
             GameManager.GetGame(e.Game.Code).GetGameModeManager().ResetGameMode();
+        }
+
+        /// <summary>
+        ///     Checks whether the player would be considered AFK.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <returns></returns>
+        private static bool IsAFK(Player player, int orginPlayCount)
+        {
+            bool afkCheck1 = player.position == Extensions.GetSpawnLocation(player.client.Character.PlayerInfo.PlayerId, orginPlayCount);
+            bool afkCheck2 = player.timesMoved < Tag._minNumOfMovements;
+            return afkCheck1 || afkCheck2;
+        }
+
+        /// <summary>
+        /// Checks if the player is wearing the proper attire while off cooldown.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <returns></returns>
+        private static bool ValidAttire(Player player)
+        {
+            byte colorId = player.client.Character.PlayerInfo.ColorId;
+
+            bool properAttireTagged = (player.isTagged && colorId != Utils.TaggedOutfit.Color);
+            bool properAttireRegular = (!player.isTagged && colorId != Utils.RegularOutfit.Color);
+
+            return properAttireTagged || properAttireRegular;
+        }
+
+        /// <summary>
+        /// Checks if the player is wearing the proper attire while on cooldown.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <returns></returns>
+        private static bool ValidAttireCooldown(Player player)
+        {
+            return player.client.Character.PlayerInfo.ColorId != Utils.CooldownTaggedOutfit.Color;
         }
 
         /// <summary>
@@ -257,10 +299,13 @@ namespace CrewNodePlugin.Games
             if (!_players.ContainsKey(playerId))
                 this.AddPlayerInstance(playerId, e.ClientPlayer);
 
+            //Update timesMoved
+            _players[playerId].timesMoved++;
+
             // Update player position
             Player player = _players[playerId];
             player.position = e.PlayerPosition;
-            _logger.LogDebug($"Updated {e.PlayerControl.PlayerInfo.PlayerName}'s position to: {player.position.X},{player.position.Y}");
+            Logger.LogDebug($"Updated {e.PlayerControl.PlayerInfo.PlayerName}'s position to: {player.position.X},{player.position.Y}");
             return player;
         }
 
@@ -297,7 +342,7 @@ namespace CrewNodePlugin.Games
             // Update the tagger to be someone else
             var taggedPlayer = regularPlayers.ElementAt(new Random().Next(0, regularPlayers.Count() - 1));
             taggedPlayer.Value.isTagged = true;
-            _logger.LogDebug($"{taggedPlayer.Value.playerName} is the new tagger!");
+            Logger.LogDebug($"{taggedPlayer.Value.playerName} is the new tagger!");
             await taggedPlayer.Value.client.Character.SetOutfitAsync(Utils.TaggedOutfit);
         }
     }
