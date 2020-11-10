@@ -1,4 +1,5 @@
-﻿using CrewNodePlugin.Manager.Models;
+﻿using CrewNodePlugin.Manager;
+using CrewNodePlugin.Manager.Models;
 using Impostor.Api.Games;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,13 @@ namespace CrewNodePlugin.Utils
     {
         public static void Setup()
         {
-            // TODO: Do something.
+            GameManager.GetAllGames().OnDictionaryChanged += DiscordUtils_OnDictionaryChanged;
+        }
+
+        private static void DiscordUtils_OnDictionaryChanged(object sender, DictChangedEventArgs<string, CrewNodeGame> e)
+        {
+            // TODO
+            Console.WriteLine("Games dictionary has been modified.");
         }
 
         public static void CreateChannel(IGame game, CrewNodeGame cnGame)

@@ -9,7 +9,7 @@ namespace CrewNodePlugin.Manager
 {
     class GameManager
     {
-        private static Dictionary<string, CrewNodeGame> _games = new Dictionary<string, CrewNodeGame>();
+        private static CrewNodeDictionary<string, CrewNodeGame> _games = new CrewNodeDictionary<string, CrewNodeGame>();
 
         /// <summary>
         ///     Create a new game for game management.
@@ -86,7 +86,7 @@ namespace CrewNodePlugin.Manager
         /// <summary>
         ///     Get all running games.
         /// </summary>
-        public static Dictionary<string, CrewNodeGame> GetAllGames()
+        public static CrewNodeDictionary<string, CrewNodeGame> GetAllGames()
         {
             return _games;
         }
