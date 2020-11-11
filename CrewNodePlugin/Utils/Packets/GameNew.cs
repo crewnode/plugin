@@ -1,24 +1,23 @@
-﻿using CrewNodePlugin.Utils.Types;
+﻿using CrewNodePlugin.Manager;
+using CrewNodePlugin.Utils.Types;
+using Impostor.Api.Innersloth;
 using static CrewNodePlugin.Utils.ApiUtils;
 
 namespace CrewNodePlugin.Utils.Packets
 {
-    class GameNew : ApiPacket
+    class GameNew : ApiPacketData
     {
-        public override PacketType GetApiType() => PacketType.GameNew;
+        public string creator { get; set; }
+        public string gameCode { get; set; }
+        public string gameMode { get; set; }
+        public string gameState { get; set; }
 
-        /// <summary>
-        ///     Override the GetData response
-        /// </summary>
-        /// <returns></returns>
-        public override string GetData()
+        public GameNew(string creator, string gameCode, GameModeManager.Identity gameMode, GameStates gameState)
         {
-            return base.GetData();
-        }
-
-        private class GameNewPacket
-        {
-            // TODO
+            this.creator = creator;
+            this.gameCode = gameCode;
+            this.gameMode = gameMode.ToString();
+            this.gameState = gameState.ToString();
         }
     }
 }

@@ -3,22 +3,15 @@ using static CrewNodePlugin.Utils.ApiUtils;
 
 namespace CrewNodePlugin.Utils.Packets
 {
-    class GameDestroy : ApiPacket
+    class GameDestroy : ApiPacketData
     {
-        public override PacketType GetApiType() => PacketType.GameDestroy;
+        public string creator { get; set; }
+        public string gameCode { get; set; }
 
-        /// <summary>
-        ///     Override the GetData response
-        /// </summary>
-        /// <returns></returns>
-        public override string GetData()
+        public GameDestroy(string creator, string gameCode)
         {
-            return base.GetData();
-        }
-
-        private class GameDestroyPacket
-        {
-            // TODO
+            this.creator = creator;
+            this.gameCode = gameCode;
         }
     }
 }

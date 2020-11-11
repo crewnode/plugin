@@ -1,24 +1,22 @@
-﻿using CrewNodePlugin.Utils.Types;
+﻿using CrewNodePlugin.Manager;
+using CrewNodePlugin.Utils.Types;
 using static CrewNodePlugin.Utils.ApiUtils;
 
 namespace CrewNodePlugin.Utils.Packets
 {
-    class GameUpdate : ApiPacket
+    class GameUpdate : ApiPacketData
     {
-        public override PacketType GetApiType() => PacketType.GameUpdate;
+        public string creator { get; set; }
+        public string gameCode { get; set; }
+        public string gameMode { get; set; }
+        public string gameState { get; set; }
 
-        /// <summary>
-        ///     Override the GetData response
-        /// </summary>
-        /// <returns></returns>
-        public override string GetData()
+        public GameUpdate(string creator, string gameCode, GameModeManager.Identity gameMode, string gameState)
         {
-            return base.GetData();
-        }
-
-        private class GameUpdatePacket
-        {
-            // TODO
+            this.creator = creator;
+            this.gameCode = gameCode;
+            this.gameMode = gameMode.ToString();
+            this.gameState = gameState;
         }
     }
 }

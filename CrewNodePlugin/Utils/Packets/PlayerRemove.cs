@@ -3,22 +3,19 @@ using static CrewNodePlugin.Utils.ApiUtils;
 
 namespace CrewNodePlugin.Utils.Packets
 {
-    class PlayerRemove : ApiPacket
+    class PlayerRemove : ApiPacketData
     {
-        public override PacketType GetApiType() => PacketType.PlayerRemove;
+        public string gameCode { get; set; }
+        public string playerName { get; set; }
+        public string ipAddress { get; set; }
+        public string discordUid { get; set; }
 
-        /// <summary>
-        ///     Override the GetData response
-        /// </summary>
-        /// <returns></returns>
-        public override string GetData()
+        public PlayerRemove(string gameCode, string playerName, string ipAddress, string discordUid)
         {
-            return base.GetData();
-        }
-
-        private class PlayerRemovePacket
-        {
-            // TODO
+            this.gameCode = gameCode;
+            this.playerName = playerName;
+            this.ipAddress = ipAddress;
+            this.discordUid = discordUid;
         }
     }
 }
