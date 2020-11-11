@@ -25,25 +25,24 @@ namespace CrewNodePlugin.Games
         public virtual async ValueTask HandlePlayerDestroyed(IPlayerDestroyedEvent e)
         {
             if (CrewNodePlugin.debug && CrewNodePlugin.verbose) Console.WriteLine("HandlePlayerDestroyed called");
-
-            if (CrewNodePlugin.debug)
-            {
-                // Sort out packets
-                PlayerRemove removePlayerPacket = new PlayerRemove(
-                    e.Game.Code,
-                    e.ClientPlayer.Character.PlayerInfo.PlayerName,
-                    e.ClientPlayer.Client.Connection.EndPoint.ToString(),
-                    ""
-                );
-                ApiUtils.Queue(new ApiPacket(ApiUtils.PacketType.PlayerRemove, removePlayerPacket), "");
-            }
         }
 
         public virtual async ValueTask HandlePlayerLeft(IGamePlayerLeftEvent e)
         {
             if (CrewNodePlugin.debug && CrewNodePlugin.verbose) Console.WriteLine("HandlePlayerLeft called");
-            
-            // TODO (Simple): Fix IGamePlayerLeftEvent access to e.Player
+
+            // TODO (Simple): Fix e.Player / e.ClientPlayer
+            /*if (CrewNodePlugin.debug)
+            {
+                // Sort out packets
+                PlayerRemove removePlayerPacket = new PlayerRemove(
+                    e.Game.Code,
+                    e.Player.Character.PlayerInfo.PlayerName,
+                    e.Player.Client.Connection.EndPoint.ToString(),
+                    ""
+                );
+                ApiUtils.Queue(new ApiPacket(ApiUtils.PacketType.PlayerRemove, removePlayerPacket), "");
+            }*/
         }
 
         public virtual async ValueTask HandlePlayerSpawned(IPlayerSpawnedEvent e)

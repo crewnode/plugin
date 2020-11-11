@@ -74,7 +74,7 @@ namespace CrewNodePlugin.Games
         /// <param name="e"></param>
         public override async ValueTask HandlePlayerDestroyed(IPlayerDestroyedEvent e)
         {
-            Console.WriteLine("HANDLE PLAYER DESTROYED");
+            if (e == null) return;
             await base.HandlePlayerDestroyed(e);
 
             // Has the game even started?
