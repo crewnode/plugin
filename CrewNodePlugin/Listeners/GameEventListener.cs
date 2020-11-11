@@ -30,10 +30,13 @@ namespace CrewNodePlugin
         /// </summary>
         /// <param name="e"></param>
         [EventListener]
-        public void OnGameCreated(IGameCreatedEvent e)
+        public async void OnGameCreatedAsync(IGameCreatedEvent e)
         {
             // We need to initialise our game manager!
-            GameManager.NewGame(e.Game);
+            CrewNodeGame game = GameManager.NewGame(e.Game);
+            if (game == null) return;
+
+            await game.GetGameModeManager().HandleEvent(e, "HandleGameCreated");
         }
 
         /// <summary>
@@ -41,10 +44,13 @@ namespace CrewNodePlugin
         /// </summary>
         /// <param name="e"></param>
         [EventListener]
-        public void OnGameAltered(IGameAlterEvent e)
+        public async void OnGameAlteredAsync(IGameAlterEvent e)
         {
             // Update our existing game
-            GameManager.UpdateGameState(e.Game);
+            CrewNodeGame game = GameManager.UpdateGameState(e.Game);
+            if (game == null) return;
+
+            await game.GetGameModeManager().HandleEvent(e, "HandleGameAltered");
         }
 
         /// <summary>
@@ -83,12 +89,33 @@ namespace CrewNodePlugin
         }
 
         /// <summary>
+        ///     Runs once a game has finished playing, and returning back to lobby.
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        [EventListener]
+        public async void OnGameEndedAsync(IGameEndedEvent e)
+        {
+            // Manager Takeover
+            CrewNodeGame game = GameManager.GetGame(e.Game.Code);
+            if (game == null) return;
+
+            GameManager.UpdateGameState(e.Game);
+            await game.GetGameModeManager().HandleEvent(e, "HandleGameEnded");
+        }
+
+        /// <summary>
         ///     Runs once a game has been destroyed
         /// </summary>
         /// <param name="e"></param>
         [EventListener]
-        public void OnGameDestroyed(IGameDestroyedEvent e)
+        public async void OnGameDestroyedAsync(IGameDestroyedEvent e)
         {
+            // Manager Takeover
+            CrewNodeGame game = GameManager.GetGame(e.Game.Code);
+            if (game == null) return;
+            await game.GetGameModeManager().HandleEvent(e, "HandleGameDestroyed");
+
             // Cleanup
             GameManager.DestroyGame(e.Game);
         }

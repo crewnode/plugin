@@ -3,6 +3,7 @@ using CrewNodePlugin.Manager;
 using CrewNodePlugin.Manager.Models;
 using Impostor.Api.Events;
 using Impostor.Api.Events.Player;
+using Impostor.Api.Innersloth;
 using Impostor.Api.Net;
 using Microsoft.Extensions.Logging;
 using System;
@@ -38,6 +39,9 @@ namespace CrewNodePlugin.Games
         public override async ValueTask HandlePlayerMovement(IPlayerMovementEvent e)
         {
             await base.HandlePlayerMovement(e);
+
+            // Has the game even started?
+            if (e.Game.GameState != GameStates.Started) return;
             if (!this._roundStarted || _players.Count < 1) return;
 
             Player movedPlayer = UpdatePlayerPosition(e);
@@ -71,9 +75,33 @@ namespace CrewNodePlugin.Games
         public override async ValueTask HandlePlayerDestroyed(IPlayerDestroyedEvent e)
         {
             await base.HandlePlayerDestroyed(e);
+
+            // Has the game even started?
+            if (e.Game.GameState != GameStates.Started) return;
+
             if (_players[e.PlayerControl.PlayerInfo.PlayerId].isTagged)
                 await SelectNewTagger();
             _players.TryRemove(e.PlayerControl.PlayerInfo.PlayerId, out _);
+        }
+
+        /// <summary>
+        ///     Handle game creation
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public override async ValueTask HandleGameCreated(IGameCreatedEvent e)
+        {
+            await base.HandleGameCreated(e);
+        }
+
+        /// <summary>
+        ///     Handle game has been deleted
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public override async ValueTask HandleGameDestroyed(IGameDestroyedEvent e)
+        {
+            await base.HandleGameDestroyed(e);
         }
 
         /// <summary>

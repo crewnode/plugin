@@ -56,6 +56,11 @@ namespace CrewNodePlugin.Manager
         public void ResetGameMode() => this.SetGameMode(_selectedGameMode);
 
         /// <summary>
+        ///     Returns the selected gamemode.
+        /// </summary>
+        public Identity GetGameMode() => _selectedGameMode;
+
+        /// <summary>
         ///     Handle an event passed from Impostor's API
         /// </summary>
         /// <param name="e">A Game Event</param>

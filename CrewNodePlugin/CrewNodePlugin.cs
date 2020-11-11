@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using CrewNodePlugin.Games;
 using CrewNodePlugin.Utils;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CrewNodePlugin
 {
-    [ImpostorPlugin(package: "crewnode", name: "CrewNode", author: "CrewNode", version: "0.0.1-alpha3")]
+    [ImpostorPlugin(package: "crewnode", name: "CrewNode", author: "CrewNode", version: "0.0.1-alpha6")]
     public class CrewNodePlugin : PluginBase
     {
         /// <summary>
@@ -17,8 +18,9 @@ namespace CrewNodePlugin
         private readonly ILogger<CrewNodePlugin> _logger;
         private readonly IEventManager _eventManager;
         private IDisposable[] _unregister;
+        private CancellationTokenSource _apiUtil;
         public static bool debug = true;
-        public static bool verbose = false;
+        public static bool verbose = true;
 
         /// <summary>
         ///     The constructor of the plugin. There are a few parameters you can add here and they
@@ -54,6 +56,24 @@ namespace CrewNodePlugin
                 _eventManager.RegisterListener(new GameEventListener(_logger)),
                 _eventManager.RegisterListener(new PlayerEventListener(_logger))
             };
+
+            if (debug)
+            {
+                _logger.LogInformation("CrewNodePlugin is starting the API Util.");
+                this._apiUtil = new CancellationTokenSource();
+                PluginUtils.RunTask(() =>
+                {
+                    try
+                    {
+                        ApiUtils.ExecuteSync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[PluginUtils]: Task failed on ApiUtils for:\n{ex.Message}\n{ex.StackTrace}");
+                    }
+                }, 3, this._apiUtil.Token);
+            }
+
             return default;
         }
 
@@ -65,6 +85,14 @@ namespace CrewNodePlugin
         public override ValueTask DisableAsync()
         {
             _logger.LogInformation("CrewNodePlugin is being disabled.");
+
+            if (debug)
+            {
+                // Stop our ApiUtil
+                this._apiUtil.Cancel();
+            }
+
+            // Cancel event listeners
             foreach (var listener in _unregister)
                 listener.Dispose();
 

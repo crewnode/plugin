@@ -32,7 +32,7 @@ namespace CrewNodePlugin.Manager
         ///     Update the game state of an existing game.
         /// </summary>
         /// <param name="game">Game Object</param>
-        public static void UpdateGameState(IGame game)
+        public static CrewNodeGame UpdateGameState(IGame game)
         {
             if (_games.ContainsKey(game.Code))
                 NewGame(game);
@@ -41,6 +41,7 @@ namespace CrewNodePlugin.Manager
             CrewNodeGame cnGame = _games[game.Code];
             Task.Run(() => DiscordUtils.UpdateChannel(game, cnGame, "update"));
             cnGame.UpdateState(game);
+            return cnGame;
         }
 
         /// <summary>

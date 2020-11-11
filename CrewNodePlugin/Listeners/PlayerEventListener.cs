@@ -35,9 +35,6 @@ namespace CrewNodePlugin
             if (CrewNodePlugin.debug)
                 _logger.LogDebug(GameManagerUtils.GetTotalLobbyCount() + " lobbies, " + GameManagerUtils.GetTotalPlayerCount() + " players.");
 
-            // Has the game even started?
-            if (e.Game.GameState != GameStates.Started) return;
-
             // Manager Takeover
             CrewNodeGame game = GameManager.GetGame(e.Game.Code);
             if (game == null) return;
@@ -50,9 +47,6 @@ namespace CrewNodePlugin
         /// <param name="e"></param>
         /// <returns></returns>
         public async Task OnPlayerDisconnectAsync(IPlayerDestroyedEvent e) {
-            // Has the game even started?
-            if (e.Game.GameState != GameStates.Started) return;
-
             // Manager Takeover
             CrewNodeGame game = GameManager.GetGame(e.Game.Code);
             if (game == null) return;
