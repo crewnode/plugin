@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CrewNodePlugin
 {
-    [ImpostorPlugin(package: "crewnode", name: "CrewNode", author: "CrewNode", version: "0.0.1-alpha6")]
+    [ImpostorPlugin(package: "crewnode", name: "CrewNode", author: "CrewNode", version: "0.0.1-alpha7")]
     public class CrewNodePlugin : PluginBase
     {
         /// <summary>

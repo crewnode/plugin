@@ -74,6 +74,7 @@ namespace CrewNodePlugin.Games
         /// <param name="e"></param>
         public override async ValueTask HandlePlayerDestroyed(IPlayerDestroyedEvent e)
         {
+            Console.WriteLine("HANDLE PLAYER DESTROYED");
             await base.HandlePlayerDestroyed(e);
 
             // Has the game even started?
@@ -91,7 +92,18 @@ namespace CrewNodePlugin.Games
         /// <returns></returns>
         public override async ValueTask HandleGameCreated(IGameCreatedEvent e)
         {
+            Console.WriteLine("HANDLE GAME CREATED");
             await base.HandleGameCreated(e);
+        }
+
+        /// <summary>
+        ///     Handle player spawn
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public override async ValueTask HandlePlayerSpawned(IPlayerSpawnedEvent e)
+        {
+            await base.HandlePlayerSpawned(e);
         }
 
         /// <summary>
@@ -101,6 +113,7 @@ namespace CrewNodePlugin.Games
         /// <returns></returns>
         public override async ValueTask HandleGameDestroyed(IGameDestroyedEvent e)
         {
+            Console.WriteLine("HANDLE GAME DESTROYED");
             await base.HandleGameDestroyed(e);
         }
 
@@ -110,7 +123,6 @@ namespace CrewNodePlugin.Games
         /// <param name="e"></param>
         public override async ValueTask HandleGameStarting(IGameStartingEvent e)
         {
-            // if (CrewNodePlugin.debug) return;
             await base.HandleGameStarting(e);
             e.Game.Options.NumEmergencyMeetings = 0;
             e.Game.Options.ImpostorLightMod = .25f;
@@ -242,6 +254,7 @@ namespace CrewNodePlugin.Games
         /// <param name="e"></param>
         public override async ValueTask HandleGameEnded(IGameEndedEvent e)
         {
+            Console.WriteLine("HANDLE GAME ENDED");
             await base.HandleGameEnded(e);
             GameManager.GetGame(e.Game.Code).GetGameModeManager().ResetGameMode();
         }

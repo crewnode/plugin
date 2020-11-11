@@ -46,9 +46,9 @@ namespace CrewNodePlugin.Games
             // TODO (Simple): Fix IGamePlayerLeftEvent access to e.Player
         }
 
-        public virtual async ValueTask HandlePlayerSpawn(IPlayerSpawnedEvent e)
+        public virtual async ValueTask HandlePlayerSpawned(IPlayerSpawnedEvent e)
         {
-            if (CrewNodePlugin.debug && CrewNodePlugin.verbose) Console.WriteLine("HandlePlayerSpawn called");
+            if (CrewNodePlugin.debug && CrewNodePlugin.verbose) Console.WriteLine("HandlePlayerSpawned called");
 
             if (CrewNodePlugin.debug)
             {
