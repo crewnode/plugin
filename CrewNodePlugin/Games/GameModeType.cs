@@ -17,7 +17,7 @@ namespace CrewNodePlugin.Games
         public static ILogger<CrewNodePlugin> Logger;
 
         // Player Calls
-        public virtual async ValueTask HandlePlayerJoin(IGamePlayerJoinedEvent e)
+        public virtual async ValueTask HandlePlayerJoined(IGamePlayerJoinedEvent e)
         {
             if (CrewNodePlugin.debug && CrewNodePlugin.verbose) Console.WriteLine("HandlePlayerJoin called");
         }
@@ -25,6 +25,19 @@ namespace CrewNodePlugin.Games
         public virtual async ValueTask HandlePlayerDestroyed(IPlayerDestroyedEvent e)
         {
             if (CrewNodePlugin.debug && CrewNodePlugin.verbose) Console.WriteLine("HandlePlayerDestroyed called");
+
+            // TODO (Simple): Fix e.Player / e.ClientPlayer
+            if (CrewNodePlugin.debug)
+            {
+                // Sort out packets
+                PlayerRemove removePlayerPacket = new PlayerRemove(
+                    e.Game.Code,
+                    e.ClientPlayer.Character.PlayerInfo.PlayerName,
+                    e.ClientPlayer.Client.Connection.EndPoint.ToString(),
+                    ""
+                );
+                ApiUtils.Queue(new ApiPacket(ApiUtils.PacketType.PlayerRemove, removePlayerPacket), "");
+            }
         }
 
         public virtual async ValueTask HandlePlayerLeft(IGamePlayerLeftEvent e)
@@ -32,17 +45,17 @@ namespace CrewNodePlugin.Games
             if (CrewNodePlugin.debug && CrewNodePlugin.verbose) Console.WriteLine("HandlePlayerLeft called");
 
             // TODO (Simple): Fix e.Player / e.ClientPlayer
-            /*if (CrewNodePlugin.debug)
+            if (CrewNodePlugin.debug)
             {
                 // Sort out packets
                 PlayerRemove removePlayerPacket = new PlayerRemove(
                     e.Game.Code,
-                    e.Player.Character.PlayerInfo.PlayerName,
-                    e.Player.Client.Connection.EndPoint.ToString(),
+                    e.ClientPlayer.Character.PlayerInfo.PlayerName,
+                    e.ClientPlayer.Client.Connection.EndPoint.ToString(),
                     ""
                 );
                 ApiUtils.Queue(new ApiPacket(ApiUtils.PacketType.PlayerRemove, removePlayerPacket), "");
-            }*/
+            }
         }
 
         public virtual async ValueTask HandlePlayerSpawned(IPlayerSpawnedEvent e)

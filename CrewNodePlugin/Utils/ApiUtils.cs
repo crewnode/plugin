@@ -47,8 +47,8 @@ namespace CrewNodePlugin.Utils
         public static async void ExecuteSync()
         {
             List<ApiPacket> _toSync = FlushQueue();
-            Console.WriteLine($"[ExecuteSync]: {_toSync.Count} items in the queue.");
             if (_toSync.Count == 0) return;
+            Console.WriteLine($"[ExecuteSync]: {_toSync.Count} items in the queue.");
 
             OutgoingPacket fullPacket = new OutgoingPacket(_toSync);
             string pkt;

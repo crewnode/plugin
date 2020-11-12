@@ -66,6 +66,8 @@ namespace CrewNodePlugin
         [EventListener]
         public async void OnPlayerJoinedAsync(IGamePlayerJoinedEvent e)
         {
+            Console.WriteLine("OnPlayerJoinedAsync - yay");
+
             // Manager Takeover
             CrewNodeGame game = GameManager.GetGame(e.Game.Code);
             if (game == null) { Console.WriteLine("joined: game doesn't exist"); return; }
