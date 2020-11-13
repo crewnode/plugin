@@ -84,8 +84,8 @@ namespace CrewNodePlugin.Games
             if(CrewNodePlugin.debug) return;
             await base.HandleGameStarting(e);
             e.Game.Options.NumEmergencyMeetings = 0;
-            e.Game.Options.ImpostorLightMod = .25f;
-            e.Game.Options.CrewLightMod = .25f;
+            e.Game.Options.ImpostorLightMod = .5f;
+            e.Game.Options.CrewLightMod = .5f;
             await e.Game.SyncSettingsAsync();
         }
 
@@ -286,7 +286,7 @@ namespace CrewNodePlugin.Games
             var p1OnTagTimer = timeInMilliseconds <= p1cooldown && pOne == playerTwo.client.Character.PlayerInfo.PlayerId;
             var p2OnTagTimer = timeInMilliseconds <= p2cooldown && pTwo == playerOne.client.Character.PlayerInfo.PlayerId;
 
-            return (p1OnTagTimer || p2OnTagTimer);
+            return (p1OnTagTimer || p2OnTagTimer || OnSelfCooldown(playerOne) || OnSelfCooldown(playerTwo));
         }
 
         /// <summary>
