@@ -1,6 +1,5 @@
 ﻿using CrewNodePlugin.Games.TagGame;
 using CrewNodePlugin.Manager;
-using CrewNodePlugin.Manager.Models;
 using Impostor.Api.Events;
 using Impostor.Api.Events.Player;
 using Impostor.Api.Innersloth;
@@ -9,12 +8,11 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using System.Threading.Tasks;
+using static CrewNodePlugin.Games.FreezeTagGame.FreezeTagUtils;
 using static CrewNodePlugin.Games.TagGame.TagUtils;
 
 namespace CrewNodePlugin.Games
@@ -56,6 +54,7 @@ namespace CrewNodePlugin.Games
                 if (Vector2.Distance(player.Value.position, movedPlayer.position) >= TagUtils.infectionRange) continue;
                 if (OnSelfCooldown(player.Value) || OnSelfCooldown(movedPlayer)) continue;
 
+                //Check if either of the players are tagged.
                 if (movedPlayer.isTagged || player.Value.isTagged)
                 {
                     movedPlayer.isFrozen = !movedPlayer.isTagged;
@@ -201,22 +200,6 @@ namespace CrewNodePlugin.Games
         }
 
         /// <summary>
-        /// Checks if the player is wearing the proper attire while off cooldown.
-        /// </summary>
-        /// <param name="player">The player to check</param>
-        /// <returns></returns>
-        private static bool ValidAttire(Player player)
-        {
-            var outfit = player.Outfit;
-
-            bool properAttireTagged = (player.isTagged && outfit != TagUtils.TaggedOutfit);
-            bool properAttireFrozen = (player.isFrozen && outfit != TagUtils.FrozenOutfit);
-            bool properAttireRegular = (!player.isTagged && !player.isFrozen && outfit != TagUtils.RegularOutfit);
-
-            return properAttireTagged || properAttireFrozen || properAttireRegular;
-        }
-
-        /// <summary>
         ///     Check if a player is on cooldown
         /// </summary>
         /// <param name="player"></param>
@@ -316,7 +299,5 @@ namespace CrewNodePlugin.Games
             Logger.LogDebug($"{taggedPlayer.Value.client.Game.Code}: {taggedPlayer.Value.playerName} was set as the new tagger!");
             await taggedPlayer.Value.client.Character.SetOutfitAsync(TagUtils.TaggedOutfit);
         }
-
-        public static bool OnlyOneTrue(params bool[] bools) => bools.Sum((bool value) => value ? 1 : 0) == 1;
     }
 }
