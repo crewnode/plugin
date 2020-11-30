@@ -57,11 +57,23 @@ namespace CrewNodePlugin.Games
                 //Check if either of the players are tagged.
                 if (movedPlayer.isTagged || player.Value.isTagged)
                 {
-                    movedPlayer.isFrozen = !movedPlayer.isTagged;
-                    player.Value.isFrozen = !player.Value.isTagged;
+                    //if (movedPlayer.isTagged)
+                    //{
+                        await UpdateOptions(player.Value);
+                        player.Value.isFrozen = true;
+                    //}
+                    //else
+                    //{
+                        await UpdateOptions(movedPlayer);
+                        movedPlayer.isFrozen = true;
+                    //}
                 }
                 else /*if (movedPlayer.isFrozen || player.Value.isFrozen)*/
                 {
+                    var options = movedPlayer.client.Game.Options;
+                    var packet = GameUtils.GenerateDataPacket(options, movedPlayer.client.Game.Code.Value, movedPlayer.client.Character.NetId);
+                    await movedPlayer.client.Client.Connection.SendAsync(packet).ConfigureAwait(false);
+
                     movedPlayer.isFrozen = false;
                     player.Value.isFrozen = false;
                 }
@@ -69,6 +81,17 @@ namespace CrewNodePlugin.Games
                 await movedPlayer.client.Character.SetOutfitAsync(movedPlayer.isTagged ? TagUtils.TaggedOutfit : movedPlayer.isFrozen ? TagUtils.FrozenOutfit : TagUtils.RegularOutfit);
                 await player.Value.client.Character.SetOutfitAsync(player.Value.isTagged ? TagUtils.TaggedOutfit : player.Value.isFrozen ? TagUtils.FrozenOutfit : TagUtils.RegularOutfit);
             }
+        }
+
+        private static async Task UpdateOptions(Player player)
+        {
+            Console.WriteLine("Did a thing!");
+            var options = player.client.Game.Options;
+            //var reset = options.PlayerSpeedMod;
+            options.CrewLightMod = 0.25f;
+            var packet = GameUtils.GenerateDataPacket(options, player.client.Game.Code.Value, player.client.Character.NetId);
+            //options.PlayerSpeedMod = reset;
+            await player.client.Client.Connection.SendAsync(packet).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -250,14 +273,14 @@ namespace CrewNodePlugin.Games
             // Update player position
             Player player = _players[playerId];
 
-            if (player.isFrozen)
-            {
-                player.client.Character.NetworkTransform.SnapToAsync(player.position);
-            }
-            else
-            {
-                player.position = e.PlayerPosition;
-            }
+            //if (player.isFrozen)
+            //{
+            //    player.client.Character.NetworkTransform.SnapToAsync(player.position);
+            //}
+            //else
+            //{
+            player.position = e.PlayerPosition;
+            //}
 
             return player;
         }

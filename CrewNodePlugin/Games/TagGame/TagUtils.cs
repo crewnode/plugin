@@ -14,7 +14,7 @@ namespace CrewNodePlugin.Games.TagGame
         /// </summary>
         public const float infectionRange = 0.5f;
         public const long tagTimer = 3000;
-        public const int roundStart = 30;
+        public const int roundStart = 10;
         public const int gameEnd = 600;
 
         /// <summary>

@@ -16,6 +16,7 @@ using Impostor.Api.Net.Inner.Objects;
 using CrewNodePlugin.Manager.Models;
 using CrewNodePlugin.Manager;
 using CrewNodePlugin.Utils;
+using Impostor.Api.Net.Messages;
 
 namespace CrewNodePlugin
 {

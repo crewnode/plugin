@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using CrewNodePlugin.Games;
 using CrewNodePlugin.Utils;
 using Impostor.Api.Events.Managers;
+using Impostor.Api.Net.Messages;
 using Impostor.Api.Plugins;
 using Microsoft.Extensions.Logging;
 
@@ -35,12 +37,12 @@ namespace CrewNodePlugin
         ///     An event manager to register event listeners.
         ///     Useful if you want your plugin to interact with the game.
         /// </param>
-        public CrewNodePlugin(ILogger<CrewNodePlugin> logger, IEventManager eventManager)
+        public CrewNodePlugin(ILogger<CrewNodePlugin> logger, IEventManager eventManager, IMessageWriterProvider provider)
         {
             _logger = logger;
             _eventManager = eventManager;
             GameModeType.Logger = logger;
-
+            Games.GameUtils.Provider = provider;
             // TODO (Simple): Discord Setup for observing games
             if (debug) DiscordUtils.Setup();
         }
