@@ -1,6 +1,6 @@
 ﻿using CrewNodePlugin.Utils.Packets;
 using CrewNodePlugin.Utils.Types;
-using Newtonsoft.Json;
+//using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -60,7 +60,7 @@ namespace CrewNodePlugin.Utils
                 {
                     { HttpRequestHeader.Authorization.ToString(), $"Bearer {ApiKey}" }
                 },
-                Content = new StringContent(pkt = JsonConvert.SerializeObject(fullPacket, Formatting.Indented), Encoding.UTF8, "application/json")
+                //Content = new StringContent(pkt = JsonConvert.SerializeObject(fullPacket, Formatting.Indented), Encoding.UTF8, "application/json")
             };
 
             _ = await _client.SendAsync(_req);

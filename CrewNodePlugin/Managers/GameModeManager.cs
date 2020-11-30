@@ -10,7 +10,7 @@ namespace CrewNodePlugin.Manager
     class GameModeManager
     {
         private IGame _game;
-        private Identity _selectedGameMode = Identity.Tag;
+        private Identity _selectedGameMode = Identity.FreezeTag;
         private GameModeType _gameMode = null;
 
         /// <summary>
@@ -46,6 +46,9 @@ namespace CrewNodePlugin.Manager
                 case Identity.HundredPlayer: break;
                 case Identity.Tag:
                     _gameMode = new Games.Tag();
+                    break;
+                case Identity.FreezeTag:
+                    _gameMode = new Games.FreezeTag();
                     break;
             }
         }
@@ -89,7 +92,8 @@ namespace CrewNodePlugin.Manager
             Regular = 0x00,
             Tag = 0x01,
             HideAndSeek = 0x02,
-            HundredPlayer = 0x03
+            HundredPlayer = 0x03,
+            FreezeTag = 0x04
         };
     }
 }
